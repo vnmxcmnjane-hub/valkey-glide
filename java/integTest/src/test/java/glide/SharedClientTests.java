@@ -91,6 +91,13 @@ public class SharedClientTests {
     @ParameterizedTest(autoCloseArguments = false)
     @MethodSource("getTimeoutClients")
     public void send_and_receive_large_values(BaseClient client) {
+        // Skip on macOS - the macOS tests run on self hosted VMs which have resource limits
+        // making this test flaky with "no buffer space available" errors
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("mac")) {
+            return;
+        }
+
         int length = 1 << 25; // 33mb
         String key = "0".repeat(length);
         String value = "0".repeat(length);

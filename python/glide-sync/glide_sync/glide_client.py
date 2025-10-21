@@ -79,6 +79,11 @@ class BaseClient(CoreCommands):
         return self
 
     def _create_core_client(self):
+        # This check is needed in case a fork happens after the client already closed
+        # In that case the registered fork function will kick in even if the
+        # client already closed, and recreate it anyway.
+        if self._is_closed:
+            return
         conn_req = self._config._create_a_protobuf_conn_request(
             cluster_mode=type(self._config) is GlideClusterClientConfiguration
         )
@@ -92,6 +97,7 @@ class BaseClient(CoreCommands):
         pubsub_callback = self._ffi.cast(
             "PubSubCallback", 0
         )  # PubSub not yet implementet for Sync Python
+
         client_response_ptr = self._lib.create_client(
             conn_req_bytes,
             len(conn_req_bytes),
