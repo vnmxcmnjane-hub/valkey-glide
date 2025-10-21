@@ -129,7 +129,7 @@ class TestGlideClients:
         # Skip on macOS - the macOS tests run on self hosted VMs which have resource limits
         # making this test flaky with "no buffer space available" errors
         system = platform.system().lower()
-        if "darwin" not in system:
+        if "darwin" in system:
             return
 
         glide_client = await create_client(
